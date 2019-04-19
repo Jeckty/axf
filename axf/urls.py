@@ -8,3 +8,4 @@ urlpatterns = [
     re_path(r'^cart/$', views.cart,name="cart"),
     re_path(r'^mine/$', views.mine,name="mine"),
 ]
+#修改一下
