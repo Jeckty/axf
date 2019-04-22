@@ -80,7 +80,7 @@ DATABASES = {
         'NAME': 'axf',
         'USER': 'root',
         'PASSWORD': '123456',
-        'HOST': '192.168.171.130',
+        'HOST': '192.168.145.129',
         'POST': '3306',
     }
 }
