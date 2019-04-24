@@ -1,7 +1,7 @@
 from django.shortcuts import render,redirect
 from django.http import JsonResponse
 import time,random
-from .models import Wheel,nav,Mustbuy,Shop,MainShow,FoodTypes,Goods,User
+from .models import Wheel,nav,Mustbuy,Shop,MainShow,FoodTypes,Goods,User,Cart
 from django.conf import settings
 import os
 from django.contrib.auth import logout
@@ -116,6 +116,59 @@ def login(request):
     else:
         f = LoginForm()
         return render(request, 'axf/login.html', {"title": "登陆","form":f})
+
+def changecart(request,flag):
+    #检查是否登陆
+    usertoken =request.session.get("token")
+    if usertoken==None:
+        return JsonResponse({"data":"-1","status":"error"})
+    user = User.objects.get(userToken=usertoken)
+    productid = request.POST.get("productid")
+    product = Goods.objects.get(productid=productid)
+    if flag=='0':
+        if product.storenums ==0:
+            return JsonResponse({"data":"-2","status":"error"})
+        carts=Cart.objects.filter(userAccount=user.userAccount)
+        c=None
+        if carts.count()==0:
+            c=Cart.createcart(user.userAccount,productid,1,product.price,True,product.productimg,product.productlongname,False)
+            c.save()
+        else:
+            try:
+                c=carts.get(productid=productid)
+                c.productnum+=1
+                c.productprice = "%.2f" % (float(product.price) * c.productnum)
+                c.save()
+            except Cart.DoesNotExist as e:
+                c = Cart.createcart(user.userAccount, productid, 1, product.price, True, product.productimg,product.productlongname, False)
+                c.save()
+        product.storenums-=1
+        product.save()
+        print(c.productnum)
+        return JsonResponse({"data":c.productnum, "price":c.productprice,"status":"success"})
+    if flag=='1':
+
+        carts=Cart.objects.filter(userAccount=user.userAccount)
+        try:
+            c=carts.get(productid=productid)
+            c.productnum -= 1
+            if c.productnum == 0:
+                c.delete()
+            else:
+                c.productprice = "%.2f" % (float(product.price) * c.productnum)
+                c.save()
+                product.storenums += 1
+                product.save()
+                return JsonResponse({"data": c.productnum, "price": c.productprice, "status": "success"})
+        except Cart.DoesNotExist as e:
+            return JsonResponse({"data": "-2", "status": "error"})
+
+
+
+        product.storenums+=1
+        product.save()
+        print(c.productnum)
+        return JsonResponse({"data":c.productnum, "price":c.productprice,"status":"success"})
 
 
 

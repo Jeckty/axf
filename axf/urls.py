@@ -11,5 +11,6 @@ urlpatterns = [
     re_path(r'^checkuserid/$',views.checkuserid,name="checkuserid"),
     re_path(r'^quit/$', views.quit,name="quit"),
     re_path(r'^login/$', views.login,name="login"),
+    re_path(r'^changecart/(\d+)/$', views.changecart,name="changecart"),
 ]
 #修改一下
