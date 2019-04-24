@@ -54,7 +54,13 @@ def market(request,categoryid,cid,sortid):
     return render(request, "axf/market.html",{"title":"闪送超市","leftSlider":leftSlider,"productList":productList,"childList":childList,"categoryid":categoryid,"cid":cid})
 
 def cart(request):
-    return render(request,'axf/cart.html',{"title":"购物车"})
+    usertoken=request.session.get("token")
+    if usertoken:
+        user=User.objects.get(userToken=usertoken)
+        cartslist=Cart.objects.filter(userAccount=user.userAccount)
+        return render(request, 'axf/cart.html', {"title": "购物车", "cartslist": cartslist})
+    else:
+        return render(request,'axf/cart.html',{"title":"购物车"})
 
 def mine(request):
     username=request.session.get("username","未登录")
@@ -173,19 +179,29 @@ def changecart(request,flag):
         except Cart.DoesNotExist as e:
             return JsonResponse({"data": "-2", "status": "error"})
 
-    if flag=='2':
-        print("***********")
-        usertoken = request.session.get("token")
-        if usertoken == None:
-            return JsonResponse({"data": "-1", "status": "error"})
-        user = User.objects.get(userToken=usertoken)
-        productid = request.POST.get("productid")
-        product = Goods.objects.get(productid=productid)
-        try:
-            c=Cart.objects.get(userAccount=user.userAccount,productid=productid)
-            return JsonResponse({"data":c.productnum,"status":"success"})
-        except Cart.DoesNotExist as e:
-            return JsonResponse({"data": 0, "status": "error"})
+    if flag=="3":
+        carts = Cart.objects.filter(userAccount=user.userAccount)
+        c = carts.get(productid=productid)
+        c.isChose = not c.isChose
+        c.save()
+        str = ""
+        if c.isChose:
+            str = "√"
+        return JsonResponse({"data": str, "status": "success"})
+
+    # if flag=='2':
+    #     print("***********")
+    #     usertoken = request.session.get("token")
+    #     if usertoken == None:
+    #         return JsonResponse({"data": "-1", "status": "error"})
+    #     user = User.objects.get(userToken=usertoken)
+    #     productid = request.POST.get("productid")
+    #     product = Goods.objects.get(productid=productid)
+    #     try:
+    #         c=Cart.objects.get(userAccount=user.userAccount,productid=productid)
+    #         return JsonResponse({"data":c.productnum,"status":"success"})
+    #     except Cart.DoesNotExist as e:
+    #         return JsonResponse({"data": 0, "status": "error"})
 
 
 
