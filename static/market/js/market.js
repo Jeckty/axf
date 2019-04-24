@@ -6,6 +6,7 @@ $(document).ready(function () {
     var sortdiv =document.getElementById("sortdiv")
     var addShoppingbtn=document.getElementsByClassName("addShopping")
     var subShoppingbtn=document.getElementsByClassName("subShopping")
+
     typediv.style.display="none"
     sortdiv.style.display="none"
 
@@ -13,7 +14,6 @@ $(document).ready(function () {
         typediv.style.display="block"
         sortdiv.style.display="none"
     },false)
-
     showsortbtn.addEventListener("click",function () {
         typediv.style.display="none"
         sortdiv.style.display="block"

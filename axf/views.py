@@ -40,6 +40,17 @@ def market(request,categoryid,cid,sortid):
         pass
     elif sortid=="3":
         pass
+    cartlist=[]
+    usertoken = request.session.get("token")
+    if usertoken:
+        user = User.objects.get(userToken=usertoken)
+        cartlist=Cart.objects.filter(userAccount=user.userAccount)
+        for p in productList:
+            for c in cartlist:
+                if p.productid==c.productid:
+                    p.num=c.productnum
+                    p.a=15
+
     return render(request, "axf/market.html",{"title":"闪送超市","leftSlider":leftSlider,"productList":productList,"childList":childList,"categoryid":categoryid,"cid":cid})
 
 def cart(request):
@@ -144,7 +155,6 @@ def changecart(request,flag):
                 c.save()
         product.storenums-=1
         product.save()
-        print(c.productnum)
         return JsonResponse({"data":c.productnum, "price":c.productprice,"status":"success"})
     if flag=='1':
 
@@ -163,12 +173,21 @@ def changecart(request,flag):
         except Cart.DoesNotExist as e:
             return JsonResponse({"data": "-2", "status": "error"})
 
+    if flag=='2':
+        print("***********")
+        usertoken = request.session.get("token")
+        if usertoken == None:
+            return JsonResponse({"data": "-1", "status": "error"})
+        user = User.objects.get(userToken=usertoken)
+        productid = request.POST.get("productid")
+        product = Goods.objects.get(productid=productid)
+        try:
+            c=Cart.objects.get(userAccount=user.userAccount,productid=productid)
+            return JsonResponse({"data":c.productnum,"status":"success"})
+        except Cart.DoesNotExist as e:
+            return JsonResponse({"data": 0, "status": "error"})
 
 
-        product.storenums+=1
-        product.save()
-        print(c.productnum)
-        return JsonResponse({"data":c.productnum, "price":c.productprice,"status":"success"})
 
 
 
