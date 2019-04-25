@@ -3,6 +3,7 @@ $(document).ready(function () {
     var addShoppingbtn=document.getElementsByClassName("addShopping")
     var subShoppingbtn=document.getElementsByClassName("subShopping")
     var confirmbtn=document.getElementById("con")
+    var okbtn=document.getElementById("ok")
     for (var i=0;i<ischooses.length;i++){
 
         ischoose=ischooses[i]
@@ -51,14 +52,25 @@ $(document).ready(function () {
     },false)}
     // 全选
     confirmbtn.addEventListener("click",function () {
-        $.post("/changecart/4/",function(data){
+            $.post("/changecart/4/",function(data){
             if (data.status=="success"){
                 ischoses2s=document.getElementsByClassName("ischose2")
+                document.getElementById("con2").innerHTML=data.data
                 for (var i=0;i<ischoses2s.length;i++){
                     ischoses2s[i].innerHTML=data.data
                 }
             }
             })
         })
+
+    // 选好了
+    okbtn.addEventListener("click",function () {
+        $.post("/changecart/5/",function (data) {
+            // for (i=0;i<data.productList.length;i++)
+                // document.getElementById(data.productList[i]+"li").style.display="None"
+            window.location.reload()
+            alert("您的订单已生成，订单号："+data.data)
+        })
+    })
 
     })

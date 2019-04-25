@@ -44,12 +44,11 @@ def market(request,categoryid,cid,sortid):
     usertoken = request.session.get("token")
     if usertoken:
         user = User.objects.get(userToken=usertoken)
-        cartlist=Cart.objects.filter(userAccount=user.userAccount)
+        cartlist=Cart.objects.filter(userAccount=user.userAccount,orderid="0")
         for p in productList:
             for c in cartlist:
                 if p.productid==c.productid:
                     p.num=c.productnum
-                    p.a=15
 
     return render(request, "axf/market.html",{"title":"闪送超市","leftSlider":leftSlider,"productList":productList,"childList":childList,"categoryid":categoryid,"cid":cid})
 
@@ -57,7 +56,8 @@ def cart(request):
     usertoken=request.session.get("token")
     if usertoken:
         user=User.objects.get(userToken=usertoken)
-        cartslist=Cart.objects.filter(userAccount=user.userAccount)
+        cartslist=Cart.objects.filter(userAccount=user.userAccount,orderid="0")
+
         return render(request, 'axf/cart.html', {"title": "购物车", "cartslist": cartslist})
     else:
         return render(request,'axf/cart.html',{"title":"购物车"})
@@ -146,7 +146,7 @@ def changecart(request,flag):
     if flag=='0':
         if product.storenums ==0:
             return JsonResponse({"data":"-2","status":"error"})
-        carts=Cart.objects.filter(userAccount=user.userAccount)
+        carts=Cart.objects.filter(userAccount=user.userAccount,orderid="0")
         c=None
         if carts.count()==0:
             c=Cart.createcart(user.userAccount,productid,1,product.price,True,product.productimg,product.productlongname,False)
@@ -165,7 +165,7 @@ def changecart(request,flag):
         return JsonResponse({"data":c.productnum, "price":c.productprice,"status":"success"})
     if flag=='1':
 
-        carts=Cart.objects.filter(userAccount=user.userAccount)
+        carts=Cart.objects.filter(userAccount=user.userAccount,orderid="0")
         try:
             c=carts.get(productid=productid)
             c.productnum -= 1
@@ -182,7 +182,7 @@ def changecart(request,flag):
             return JsonResponse({"data": "-2", "status": "error"})
 
     if flag=="3":
-        carts = Cart.objects.filter(userAccount=user.userAccount)
+        carts = Cart.objects.filter(userAccount=user.userAccount,orderid="0")
         c = carts.get(productid=productid)
         c.isChose = not c.isChose
         c.save()
@@ -191,26 +191,28 @@ def changecart(request,flag):
             str = "√"
         return JsonResponse({"data": str, "status": "success"})
     if flag == "4":
-        carts = Cart.objects.filter(userAccount=user.userAccount)
+        carts = Cart.objects.filter(userAccount=user.userAccount,orderid="0")
         for c in carts:
             c.isChose = True
             c.save()
         str = "√"
         return JsonResponse({"data": str, "status": "success"})
+    if flag=="5":
+        carts = Cart.objects.filter(userAccount=user.userAccount,isChose=True,orderid="0")
+        orderid=user.userAccount+time.strftime("%Y%m%d%H%M%S", time.localtime())
+        # orderid=str(order)
+        productList=[]
+        for cart in carts:
+            productList.append(cart.productid)
+            cart.orderid=orderid
+            cart.save()
+            good=Goods.objects.filter(productid=cart.productid)
+            good=good.first()
+            good.productnum+=1
+            good.save()
+        return JsonResponse({"data":orderid,"status":"success","productList":productList})
 
-    # if flag=='2':
-    #     print("***********")
-    #     usertoken = request.session.get("token")
-    #     if usertoken == None:
-    #         return JsonResponse({"data": "-1", "status": "error"})
-    #     user = User.objects.get(userToken=usertoken)
-    #     productid = request.POST.get("productid")
-    #     product = Goods.objects.get(productid=productid)
-    #     try:
-    #         c=Cart.objects.get(userAccount=user.userAccount,productid=productid)
-    #         return JsonResponse({"data":c.productnum,"status":"success"})
-    #     except Cart.DoesNotExist as e:
-    #         return JsonResponse({"data": 0, "status": "error"})
+
 
 
 
