@@ -1,5 +1,7 @@
 $(document).ready(function () {
     var ischooses =document.getElementsByClassName("ischose")
+    var addShoppingbtn=document.getElementsByClassName("addShopping")
+    var subShoppingbtn=document.getElementsByClassName("subShopping")
     for (var i=0;i<ischooses.length;i++){
 
         ischoose=ischooses[i]
@@ -14,4 +16,36 @@ $(document).ready(function () {
                 })
             })
         }
+    for (var i=0;i<addShoppingbtn.length;i++){
+        addShoppingbtn[i].addEventListener("click",function () {
+            pid= this.getAttribute("ga")
+            $.post("/changecart/0/",{"productid":pid},function(data){
+
+                if (data.status=="success"){
+                    document.getElementById(pid).innerHTML=data.data
+                }
+                else {
+                    if (data.data=='-1'){
+                        window.location.href="http://127.0.0.1:8000/login/"
+                    }
+                }
+            })
+    },false)}
+    for (var i=0;i<subShoppingbtn.length;i++){
+        subShoppingbtn[i].addEventListener("click",function () {
+            pid= this.getAttribute("ga")
+            $.post("/changecart/1/",{"productid":pid},function(data){
+                if (data.status=="success"){
+                    document.getElementById(pid).innerHTML=data.data
+                    if (data.data==0){
+                        document.getElementById(pid+"li").style.display=("None")
+                    }
+                }
+                else {
+                    if (data.data=='-1'){
+                        window.location.href="http://127.0.0.1:8000/login/"
+                    }
+                }
+            })
+    },false)}
     })

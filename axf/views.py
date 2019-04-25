@@ -141,7 +141,6 @@ def changecart(request,flag):
         return JsonResponse({"data":"-1","status":"error"})
     user = User.objects.get(userToken=usertoken)
     productid = request.POST.get("productid")
-    print(productid)
     product = Goods.objects.filter(productid=productid)
     product=product.first()
     if flag=='0':
