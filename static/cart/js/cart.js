@@ -2,7 +2,7 @@ $(document).ready(function () {
     var ischooses =document.getElementsByClassName("ischose")
     var addShoppingbtn=document.getElementsByClassName("addShopping")
     var subShoppingbtn=document.getElementsByClassName("subShopping")
-    var confirmbtn=document.getElementById("con")
+    var confirmbtn=document.getElementById("con2")
     var okbtn=document.getElementById("ok")
     for (var i=0;i<ischooses.length;i++){
 
@@ -52,16 +52,23 @@ $(document).ready(function () {
     },false)}
     // 全选
     confirmbtn.addEventListener("click",function () {
+
+        if (this.innerHTML=="√"){
+            this.innerHTML='0'
+        }
+        else{
+            // alert("hhhhh")
+            this.innerHTML="√"
             $.post("/changecart/4/",function(data){
             if (data.status=="success"){
                 ischoses2s=document.getElementsByClassName("ischose2")
-                document.getElementById("con2").innerHTML=data.data
+                // document.getElementById("con2").innerHTML=data.data
                 for (var i=0;i<ischoses2s.length;i++){
                     ischoses2s[i].innerHTML=data.data
                 }
             }
             })
-        })
+        }})
 
     // 选好了
     okbtn.addEventListener("click",function () {
