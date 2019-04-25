@@ -1,6 +1,6 @@
 $(document).ready(function () {
     var ischooses =document.getElementsByClassName("ischose")
-    for (var i=1;i<ischooses.length;i++){
+    for (var i=0;i<ischooses.length;i++){
 
         ischoose=ischooses[i]
         ischoose.addEventListener("click",function () {

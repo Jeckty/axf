@@ -141,7 +141,9 @@ def changecart(request,flag):
         return JsonResponse({"data":"-1","status":"error"})
     user = User.objects.get(userToken=usertoken)
     productid = request.POST.get("productid")
-    product = Goods.objects.get(productid=productid)
+    print(productid)
+    product = Goods.objects.filter(productid=productid)
+    product=product.first()
     if flag=='0':
         if product.storenums ==0:
             return JsonResponse({"data":"-2","status":"error"})
@@ -170,6 +172,7 @@ def changecart(request,flag):
             c.productnum -= 1
             if c.productnum == 0:
                 c.delete()
+                return JsonResponse({"data": c.productnum, "price": c.productprice, "status": "success"})
             else:
                 c.productprice = "%.2f" % (float(product.price) * c.productnum)
                 c.save()
