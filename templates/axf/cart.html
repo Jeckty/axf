@@ -51,7 +51,7 @@
                     <li id="{{item.productid}}li" class="menuList">
                         <div class="confirm">
                             <span class="ischose" goodsid="{{item.productid}}">
-                                <span id="{{item.productid}}a">
+                                <span class="ischose2" id="{{item.productid}}a">
                                 {% ifequal True item.isChose %}
                                 √
                                 {% endifequal %}
@@ -72,7 +72,7 @@
                     {% endfor %}
 
 					<li class="payTheBill">
-						<div class="confirm"><span><span>
+						<div class="confirm" id="con"><span><span>
                             {% if trueFlag %}
                             √
                             {% endif %}

@@ -190,6 +190,13 @@ def changecart(request,flag):
         if c.isChose:
             str = "√"
         return JsonResponse({"data": str, "status": "success"})
+    if flag == "4":
+        carts = Cart.objects.filter(userAccount=user.userAccount)
+        for c in carts:
+            c.isChose = True
+            c.save()
+        str = "√"
+        return JsonResponse({"data": str, "status": "success"})
 
     # if flag=='2':
     #     print("***********")
