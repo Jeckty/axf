@@ -1,5 +1,5 @@
 from django.shortcuts import render,redirect
-from django.http import JsonResponse
+from django.http import JsonResponse,HttpResponseRedirect
 import time,random
 from .models import Wheel,nav,Mustbuy,Shop,MainShow,FoodTypes,Goods,User,Cart
 from django.conf import settings
@@ -211,6 +211,13 @@ def changecart(request,flag):
             good.productnum+=1
             good.save()
         return JsonResponse({"data":orderid,"status":"success","productList":productList})
+
+def order(request):
+    usertoken = request.session.get("token")
+    if usertoken == None:
+        return HttpResponseRedirect("/login/")
+
+    return render(request,"axf/order.html")
 
 
 
